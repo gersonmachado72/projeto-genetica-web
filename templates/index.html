@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Genética Personalizada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.2em;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 1em;
+        }
+        .dna-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .upload-area {
+            border: 2px dashed #0f3460;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        .upload-area:hover {
+            border-color: #e94560;
+            background: #fff5f5;
+        }
+        .upload-area label {
+            cursor: pointer;
+            display: block;
+        }
+        .upload-area .icon {
+            font-size: 3em;
+            color: #0f3460;
+            margin-bottom: 15px;
+        }
+        .upload-area h3 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .upload-area p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .upload-area input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: #0f3460;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background: #e94560;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #0f3460;
+        }
+        .info-box h4 {
+            color: #0f3460;
+            margin-bottom: 5px;
+        }
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-box ul li {
+            padding: 5px 0;
+            color: #333;
+            font-size: 0.9em;
+        }
+        .info-box ul li::before {
+            content: "🧬 ";
+        }
+        .flash {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #ffe0e0;
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.8em;
+        }
+        .genes-badge {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="dna-icon">🧬</div>
+            <h1>Análise Genética Personalizada</h1>
+            <p class="subtitle">Upload de sequência de DNA para detecção de mutações patogênicas</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" id="dropZone">
+                <label for="fileInput">
+                    <div class="icon">📤</div>
+                    <h3>Arraste seu arquivo .txt aqui</h3>
+                    <p>ou clique para selecionar</p>
+                    <p style="font-size: 0.8em; color: #999; margin-top: 10px;">
+                        Formatos suportados: FASTA, sequência simples
+                    </p>
+                    <input type="file" name="file" id="fileInput" accept=".txt">
+                </label>
+                <div id="fileName" style="margin-top: 10px; color: #0f3460; font-weight: 600; display: none;"></div>
+                <button type="submit" class="btn" id="submitBtn" disabled>
+                    🔬 Analisar Sequência
+                </button>
+            </div>
+        </form>
+
+        <div class="info-box">
+            <h4>📋 Genes Analisados:</h4>
+            <ul>
+                <li><strong>Parkinson:</strong> GBA, LRRK2</li>
+                <li><strong>Câncer de Mama:</strong> BRCA1, BRCA2</li>
+                <li><strong>Câncer de Pulmão:</strong> EGFR, KRAS, TP53</li>
+                <li><strong>Cardiovasculares:</strong> LMNA, KCNQ1</li>
+            </ul>
+            <div style="margin-top: 10px;">
+                <span class="genes-badge">GBA</span>
+                <span class="genes-badge">LRRK2</span>
+                <span class="genes-badge">BRCA1</span>
+                <span class="genes-badge">BRCA2</span>
+                <span class="genes-badge">EGFR</span>
+                <span class="genes-badge">KRAS</span>
+                <span class="genes-badge">TP53</span>
+                <span class="genes-badge">LMNA</span>
+                <span class="genes-badge">KCNQ1</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            Projeto Genética | Análise de Mutações Patogênicas
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const submitBtn = document.getElementById('submitBtn');
+        const dropZone = document.getElementById('dropZone');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileName.textContent = '📄 ' + this.files[0].name;
+                fileName.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🔬 Analisar ' + this.files[0].name;
+            }
+        });
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#e94560';
+            this.style.background = '#fff5f5';
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#0f3460';
+            this.style.background = '#f8f9fa';
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#0f3460';
+            this.style.background = '#f8f9fa';
+            
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+
+        // Validação antes de enviar
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            if (!fileInput.files || !fileInput.files[0]) {
+                e.preventDefault();
+                alert('Por favor, selecione um arquivo primeiro!');
+            } else if (!fileInput.files[0].name.endsWith('.txt')) {
+                e.preventDefault();
+                alert('Por favor, selecione um arquivo .txt!');
+            }
+        });
+    </script>
+</body>
+</html>

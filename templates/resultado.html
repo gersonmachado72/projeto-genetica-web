@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Análise Genética</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .header h1 {
+            font-size: 2em;
+            color: #1a1a2e;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .back-btn {
+            display: inline-block;
+            background: #0f3460;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .back-btn:hover {
+            background: #e94560;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0f3460;
+        }
+        .card.danger {
+            border-left-color: #e94560;
+            background: #fff5f5;
+        }
+        .card.success {
+            border-left-color: #27ae60;
+            background: #f0fff4;
+        }
+        .card.warning {
+            border-left-color: #f39c12;
+            background: #fffbf0;
+        }
+        .card h3 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 2px;
+        }
+        .badge.risco-alto { background: #e94560; color: white; }
+        .badge.risco-medio { background: #f39c12; color: white; }
+        .badge.risco-baixo { background: #27ae60; color: white; }
+        .badge.gene { background: #0f3460; color: white; }
+        
+        .mutacao-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .mutacao-item h4 {
+            color: #e94560;
+            margin-bottom: 5px;
+        }
+        .mutacao-item .gene-tag {
+            background: #0f3460;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            display: inline-block;
+        }
+        .recomendacoes {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .recomendacoes li {
+            padding: 5px 0;
+            color: #333;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .stat-item .number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #0f3460;
+        }
+        .stat-item .label {
+            color: #666;
+            font-size: 0.8em;
+        }
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .download-btn:hover {
+            background: #219a52;
+        }
+        .no-mutacoes {
+            text-align: center;
+            padding: 30px;
+            color: #27ae60;
+            font-size: 1.2em;
+        }
+        .no-mutacoes .icon {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.8em;
+        }
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 Resultado da Análise</h1>
+            <p class="subtitle">Arquivo: {{ filename }} | Análise: {{ timestamp }}</p>
+            <a href="/" class="back-btn">← Nova Análise</a>
+        </div>
+
+        <!-- Estatísticas da Sequência -->
+        <div class="card">
+            <h3>📊 Estatísticas da Sequência</h3>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="number">{{ resultado.tamanho }}</div>
+                    <div class="label">Nucleotídeos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ resultado.composicao.gc }}%</div>
+                    <div class="label">Conteúdo GC</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">{{ resultado.mutacoes|length }}</div>
+                    <div class="label">Mutações Detectadas</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                <strong>Composição:</strong> A: {{ resultado.composicao.A }} | 
+                C: {{ resultado.composicao.C }} | 
+                G: {{ resultado.composicao.G }} | 
+                T: {{ resultado.composicao.T }}
+            </div>
+        </div>
+
+        <!-- Mutações Detectadas -->
+        {% if resultado.mutacoes %}
+            <div class="card danger">
+                <h3>⚠️ Mutações Detectadas</h3>
+                {% for mutacao in resultado.mutacoes %}
+                    <div class="mutacao-item">
+                        <h4>🧬 {{ mutacao.mutacao }}</h4>
+                        <span class="gene-tag">{{ mutacao.gene }}</span>
+                        <span class="badge risco-{{ mutacao.risco|lower }}">{{ mutacao.risco }}</span>
+                        <p style="margin: 8px 0; color: #555;">
+                            <strong>Doença:</strong> {{ mutacao.doenca }}
+                        </p>
+                        <p style="margin: 5px 0; color: #555; font-size: 0.9em;">
+                            {{ mutacao.descricao }}
+                        </p>
+                        <p style="margin: 5px 0; color: #777; font-size: 0.85em;">
+                            <strong>Frequência:</strong> {{ mutacao.frequencia }}
+                        </p>
+                        <div style="margin-top: 10px;">
+                            <strong style="color: #e94560;">📋 Recomendações:</strong>
+                            <ul class="recomendacoes">
+                                {% for rec in mutacao.recomendacoes %}
+                                    <li>{{ rec }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card success">
+                <div class="no-mutacoes">
+                    <span class="icon">✅</span>
+                    <p><strong>Nenhuma mutação patogênica detectada</strong></p>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                        A sequência analisada não apresenta mutações conhecidas associadas às doenças estudadas.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Ações -->
+        <div class="btn-group">
+            <a href="/relatorio/{{ analise.id }}" class="download-btn">📄 Ver Relatório Completo</a>
+            <a href="/download/{{ analise.id }}" class="download-btn" style="background: #0f3460;">💾 Baixar JSON</a>
+            <a href="/" class="download-btn" style="background: #666;">🏠 Nova Análise</a>
+        </div>
+
+        <div class="footer">
+            Projeto Genética | Análise automatizada de mutações patogênicas
+        </div>
+    </div>
+</body>
+</html>

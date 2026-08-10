@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-grid"></i> Dashboard - {{ current_user.nome }}</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+                <h1 class="display-4 text-primary">{{ total_analises }}</h1>
+                <p>Análises</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+                <h1 class="display-4 text-danger">{{ total_mutacoes }}</h1>
+                <p>Mutações</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h5><i class="bi bi-upload"></i> Nova Análise</h5>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <input type="file" name="file" class="form-control" accept=".txt,.fasta,.fa" required>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary-custom w-100">Analisar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Últimas Análises -->
+<h4>Últimas Análises</h4>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Arquivo</th>
+            <th>GC%</th>
+            <th>Mutações</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for analise in ultimas_analises %}
+        <tr>
+            <td>{{ analise.arquivo_original or 'N/A' }}</td>
+            <td>{{ analise.conteudo_gc }}%</td>
+            <td>
+                <span class="badge {% if analise.mutacoes %}bg-danger{% else %}bg-success{% endif %}">
+                    {{ analise.mutacoes|length }}
+                </span>
+            </td>
+            <td>{{ analise.data_analise.strftime('%d/%m/%Y') }}</td>
+            <td>
+                <a href="{{ url_for('ver_resultado', analise_id=analise.id) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

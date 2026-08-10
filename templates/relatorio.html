@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Genético Detalhado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 40px;
+        }
+        .relatorio {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .relatorio-header {
+            text-align: center;
+            border-bottom: 3px solid #0f3460;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .relatorio-header h1 {
+            color: #1a1a2e;
+            font-size: 2em;
+        }
+        .relatorio-header .subtitle {
+            color: #666;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #0f3460;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .section h2 .emoji {
+            margin-right: 10px;
+        }
+        .mutacao-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e94560;
+        }
+        .mutacao-card h3 {
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+        .mutacao-card .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .mutacao-card .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .mutacao-card .info-item .label {
+            color: #666;
+            font-size: 0.8em;
+        }
+        .mutacao-card .info-item .value {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .recomendacao-list {
+            list-style: none;
+            padding: 0;
+        }
+        .recomendacao-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .recomendacao-list li::before {
+            content: "✅";
+            margin-right: 10px;
+        }
+        .no-mutacoes {
+            text-align: center;
+            padding: 40px;
+            background: #f0fff4;
+            border-radius: 10px;
+            border: 2px solid #27ae60;
+        }
+        .no-mutacoes .icon {
+            font-size: 4em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #999;
+            font-size: 0.8em;
+        }
+        .print-btn {
+            background: #0f3460;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+        }
+        .print-btn:hover {
+            background: #e94560;
+        }
+        .back-btn {
+            display: inline-block;
+            background: #666;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .back-btn:hover {
+            background: #444;
+        }
+        @media print {
+            body { padding: 0; background: white; }
+            .relatorio { box-shadow: none; padding: 20px; }
+            .print-btn, .back-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="relatorio">
+        <div class="relatorio-header">
+            <h1>🧬 RELATÓRIO GENÉTICO DETALHADO</h1>
+            <p class="subtitle">Análise de Mutações Patogênicas</p>
+            <p style="color: #999; font-size: 0.85em;">Data: {{ timestamp }}</p>
+        </div>
+
+        <!-- Resumo -->
+        <div class="section">
+            <h2><span class="emoji">📊</span>Resumo da Análise</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold; color: #0f3460;">{{ resultado.tamanho }}</div>
+                    <div style="color: #666;">Nucleotídeos</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold; color: #0f3460;">{{ resultado.composicao.gc }}%</div>
+                    <div style="color: #666;">Conteúdo GC</div>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold; color: {% if resultado.mutacoes %}#e94560{% else %}#27ae60{% endif %};">
+                        {{ resultado.mutacoes|length }}
+                    </div>
+                    <div style="color: #666;">Mutações Detectadas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mutacoes -->
+        <div class="section">
+            <h2><span class="emoji">🧬</span>Mutações Detectadas</h2>
+            {% if resultado.mutacoes %}
+                {% for mutacao in resultado.mutacoes %}
+                    <div class="mutacao-card">
+                        <h3>🔬 {{ mutacao.mutacao }}</h3>
+                        <div style="margin-bottom: 10px;">
+                            <span style="background: #0f3460; color: white; padding: 2px 12px; border-radius: 12px; font-size: 0.85em;">{{ mutacao.gene }}</span>
+                            <span style="background: {% if mutacao.risco == 'Alto' %}#e94560{% elif mutacao.risco == 'Médio-Alto' %}#f39c12{% else %}#27ae60{% endif %}; color: white; padding: 2px 12px; border-radius: 12px; font-size: 0.85em;">
+                                {{ mutacao.risco }}
+                            </span>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="label">Doença</div>
+                                <div class="value">{{ mutacao.doenca }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">Frequência</div>
+                                <div class="value">{{ mutacao.frequencia }}</div>
+                            </div>
+                        </div>
+                        <p style="margin: 15px 0; color: #555;">{{ mutacao.descricao }}</p>
+                        
+                        <h4 style="color: #e94560; margin: 15px 0 10px 0;">📋 Recomendações Clínicas</h4>
+                        <ul class="recomendacao-list">
+                            {% for rec in mutacao.recomendacoes %}
+                                <li>{{ rec }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-mutacoes">
+                    <span class="icon">✅</span>
+                    <h3>Nenhuma Mutação Patogênica Detectada</h3>
+                    <p style="color: #666; margin-top: 10px;">
+                        A sequência analisada não apresenta mutações conhecidas associadas às doenças estudadas.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Metadados -->
+        <div class="section">
+            <h2><span class="emoji">📋</span>Metadados da Análise</h2>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                <p><strong>Data da Análise:</strong> {{ timestamp }}</p>
+                <p><strong>Ferramenta:</strong> Análise Genética Personalizada v1.0</p>
+                <p><strong>Banco de dados:</strong> Mutações patogênicas catalogadas (Parkinson, Câncer, Cardiovascular)</p>
+                <p><strong>Método:</strong> Detecção por padrões de sequência (Regex)</p>
+            </div>
+        </div>
+
+        <!-- Ações -->
+        <div style="text-align: center;">
+            <button onclick="window.print()" class="print-btn">🖨️ Imprimir Relatório</button>
+            <a href="/" class="back-btn">← Nova Análise</a>
+        </div>
+
+        <div class="footer">
+            ⚕️ Este relatório é para fins educacionais e de pesquisa. Consulte um profissional de saúde para decisões clínicas.
+        </div>
+    </div>
+</body>
+</html>

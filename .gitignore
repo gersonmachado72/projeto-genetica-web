@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+.env
+
+# Banco de dados
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads e resultados
+uploads/
+resultados/
+relatorios_pdf/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Backup
+*.backup
+*.backup2
+
+# Ambiente virtual
+venv/
+venv_web/
+env/
+.env
+
+# Arquivos temporários
+*.tmp
+*.temp
