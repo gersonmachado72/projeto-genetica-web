@@ -53,7 +53,7 @@ Esta aplicação permite o upload de sequências de DNA em formato FASTA ou TXT 
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/projeto-genetica-web.git
+git clone https://github.com/gersonmachado72/projeto-genetica-web.git
 cd projeto-genetica-web
 2. Criar ambiente virtual
 bash
@@ -128,9 +128,9 @@ Abra um Pull Request
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 📧 Contato
-Seu Nome - seu@email.com
+Gerson Machaado - gerson72m@gmail.com
 
-Link do Projeto: https://github.com/seu-usuario/projeto-genetica-web
+Link do Projeto: https://github.com/gersonmachado72/projeto-genetica-web.git
 
 ⚠️ Aviso
 Esta ferramenta é exclusivamente para fins educacionais e de pesquisa. Não substitui diagnósticos médicos profissionais. Consulte sempre um médico geneticista para decisões clínicas.
