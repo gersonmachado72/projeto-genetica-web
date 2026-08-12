@@ -5,8 +5,8 @@ class Config:
     
     # Configurações do MySQL
     MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'luck'           
-    MYSQL_PASSWORD = '0397154#_!54179330_#!wsx_yhn#!'  
+    MYSQL_USER = 'seu_usuario'           
+    MYSQL_PASSWORD = 'sua_senha'  
     MYSQL_DB = 'genetica_db'
     MYSQL_CURSORCLASS = 'DictCursor'
     
